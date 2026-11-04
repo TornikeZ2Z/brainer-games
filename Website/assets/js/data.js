@@ -203,7 +203,7 @@ window.BRAINER = {
       src: location.pathname.includes('/Website/') ? '../Game%20%233%20-%20Fly%20High/index.html' : 'fly-high/index.html',
       tagline: 'Your Brainer takes off and the multiplier climbs. Cash out before it flies away.',
       about: [
-        'A crash game in the style of Aviator. Rounds run one after another: a short betting window, then take-off, and the multiplier climbs from 1.00× until the plane flies away at a point fixed before take-off.',
+        'A crash game played in rounds, one after another: a short betting window, then take-off, and the multiplier climbs from 1.00× until the plane flies away at a point fixed before take-off.',
         'Cash out at any moment in flight to win the bet times the multiplier. If the plane flies away first, the bet is lost. Two bets can ride the same round, each with its own auto bet and auto cash-out.',
         'The Brainer flies its 3D plane up from the valley’s runway, and the higher the multiplier, the higher it climbs: over the fields, through the clouds, above them, and from about 120× to the edge of space.'
       ],
@@ -221,7 +221,7 @@ window.BRAINER = {
       maxWin: 10000,
       capEnds: 'high-bet',   // what the max win cuts short: only high bets here, since 10,000× at $0.10 is $1,000
       specs: [
-        ['Type', 'Crash, Aviator style, rounds every few seconds'],
+        ['Type', 'Crash, rounds every few seconds'],
         ['RTP', 'Up to 97%, at any cash-out point'],
         ['Brain levels', 'Looks only, never the odds'],
         ['Multiplier', '1.00× to 10,000×; about 4 rounds in 100 fly away at 1.00×'],

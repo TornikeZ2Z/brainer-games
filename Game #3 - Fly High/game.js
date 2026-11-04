@@ -11,7 +11,7 @@ const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return
 const cents = v => Math.round(v * 100) / 100;   // the balance stays in whole cents, so it matches every amount shown
 
 /* ---------- config & math ---------- */
-// Aviator's rules with the Iron Brainer (Tornike, 2026-10-26): rounds run on their own, a betting window, take-off on
+// Crash rules with the Iron Brainer (Tornike, 2026-10-26): rounds run on their own, a betting window, take-off on
 // hand and foot jets, and the multiplier climbs until the Brainer flies away at a point fixed before take-off. A bet
 // cashed out at x pays x, so with the fly-away point 0.97 ÷ (1 − u)
 // (u uniform, rounded down to the cent) every cash-out point returns 97% before rounding down and the $10,000 max win,
@@ -19,7 +19,7 @@ const cents = v => Math.round(v * 100) / 100;   // the balance stays in whole ce
 const cfg = {
   rtp: 97, minBet: 0.1, maxBet: 200, maxWin: 10000, maxMult: 10000, startBalance: 1000,
   waitMs: 6000, endMs: 3200,
-  // Aviator's pace (Tornike, 2026-10-27: "same as Aviator, it is too fast now"). Timed on Spribe's own demo, the
+  // The market's usual pace (Tornike, 2026-10-27: it was too fast). Timed on the leading crash game's demo, the
   // multiplier there is a steady exponential, ln(multiplier) = 0.083·s, s seconds after take-off: 2× at 8.4 s, 10× at
   // 28 s, 100× at 56 s, 10,000× at 111 s. Kept as ln = a·s + b·s² so a later change of pace stays a one-line edit.
   grow: [0.083, 0],
@@ -900,7 +900,7 @@ function renderBoard() {
 }
 
 /* ---------- sheets: fairness, how to play, and the leaderboard (a side panel on wide screens) ---------- */
-// From 1100 px the leaderboard stands in its own column beside the game, as Aviator's does; narrower, it opens as a sheet.
+// From 1100 px the leaderboard stands in its own column beside the game, as the leading crash games' does; narrower, it opens as a sheet.
 const wideQ = matchMedia('(min-width:1100px)');
 function syncSide() {
   const el = $('#topSheet');
