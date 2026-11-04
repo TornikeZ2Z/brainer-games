@@ -68,7 +68,7 @@ const enc = new TextEncoder();
 const hex = b => Array.from(new Uint8Array(b), x => x.toString(16).padStart(2, '0')).join('');
 const randHex = n => hex(crypto.getRandomValues(new Uint8Array(n)));
 const sha256 = async s => hex(await crypto.subtle.digest('SHA-256', enc.encode(s)));
-// Every charge is one yes or no, as in Chicken Road and Charge (Tornike, 2026-10-30): HMAC-SHA256(server seed, "client
+// Every charge is one yes or no, as in Charge (Tornike, 2026-10-30): HMAC-SHA256(server seed, "client
 // seed:nonce:charge"), read as a fraction, is a no at or above that charge's survival chance. It's fixed before the player
 // picks and no pillar can change it: the pillar picked only shows the answer.
 async function drawSteps(seed, client, nonce, d) {

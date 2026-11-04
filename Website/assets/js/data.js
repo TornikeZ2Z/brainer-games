@@ -52,6 +52,7 @@ window.BRAINER = {
       // or 10 holding shields, multiplier = RTP ÷ chance of surviving, rounded down to the cent; five drones in every row,
       // one yes or no per row, the other drones for show, as Plane Crash's five paths.
       provisional: true,
+      rtpPage: true,   // rtp-<id>.html: how the RTP is calculated (assets/js/rtp-page.js)
       rtp: 97,
       minBet: 0.1,
       maxWin: 10000,
@@ -63,8 +64,8 @@ window.BRAINER = {
         { name: 'Hardcore', bombs: 10, steps: 15, reach: 14, first: 1.61, top: 3170697.2 }
       ],
       specs: [
-        ['Type', 'Instant, Chicken Road style, five-way pick'],
-        ['RTP', 'Up to 97%'],
+        ['Type', 'Instant, five-way pick, one roll per step'],
+        ['RTP', 'Up to 97%, the same at every cash-out point'],
         ['Difficulties', '1, 3, 5 or 10 holding shields in 25 rows'],
         ['Rows per round', '24, 22, 20, up to 14'],
         ['Bet range', '$0.10 to $200'],
@@ -105,6 +106,7 @@ window.BRAINER = {
       // 5 or 10 overloads, multiplier = RTP ÷ chance of surviving, rounded down to the cent; five pillars at every charge,
       // one yes or no per charge, the other pillars for show, as Plane Crash's five paths.
       provisional: true,
+      rtpPage: true,   // rtp-<id>.html: how the RTP is calculated (assets/js/rtp-page.js)
       rtp: 97,
       minBet: 0.1,
       maxWin: 10000,
@@ -116,8 +118,8 @@ window.BRAINER = {
         { name: 'Hardcore', bombs: 10, steps: 15, reach: 14, first: 1.61, top: 3170697.2 }
       ],
       specs: [
-        ['Type', 'Instant, Chicken Road style, five-way pick'],
-        ['RTP', 'Up to 97%'],
+        ['Type', 'Instant, five-way pick, one roll per step'],
+        ['RTP', 'Up to 97%, the same at every cash-out point'],
         ['Difficulties', '1, 3, 5 or 10 overloads in 25 charges'],
         ['Charges per round', '24, 22, 20, up to 14'],
         ['Bet range', '$0.10 to $200'],
@@ -154,11 +156,12 @@ window.BRAINER = {
         'At each step choose one of five paths. The step’s result is fixed before you pick, so no path is better than another, and the bombs on the others are only for show. The ladder shows what a safe path pays.',
         'Jump with the parachute whenever you like to cash out at the current multiplier. A bomb on your path ends the flight.'
       ],
-      // Mirrors cfg and LEVELS in Game #1 - Plane Crash/game.js (Chicken Road's ladder: 25 tiles hide 1, 3, 5 or 10 bombs,
+      // Mirrors cfg and LEVELS in Game #1 - Plane Crash/game.js (a 25-tile ladder: 25 tiles hide 1, 3, 5 or 10 bombs,
       // multiplier = RTP ÷ chance of surviving, rounded down to the cent); final once the game is certified. `top` is the
       // ladder's last step; the site shows what a flight can pay, the max win at the minimum bet when that is lower. A
       // Hardcore flight through path 14 has reached the max win even at $0.10, so path 15 is never offered: `reach` paths.
       provisional: true,
+      rtpPage: true,   // rtp-<id>.html: how the RTP is calculated (assets/js/rtp-page.js)
       rtp: 97,
       minBet: 0.1,
       maxWin: 10000,
@@ -170,7 +173,7 @@ window.BRAINER = {
       ],
       specs: [
         ['Type', 'Crash, single player, five-way pick'],
-        ['RTP', 'Up to 97%'],
+        ['RTP', 'Up to 97%, the same at every cash-out point'],
         ['Brain levels', 'Looks only, never the odds'],
         ['Difficulties', '1, 3, 5 or 10 bombs in 25 tiles'],
         ['Paths per flight', '24, 22, 20, up to 14'],
@@ -212,6 +215,7 @@ window.BRAINER = {
       // Mirrors cfg in Game #3 - Fly High/game.js: the round flies away at 0.97 ÷ (1 − u), rounded down to the cent,
       // 1.00× at least and 10,000× at most, so every cash-out point returns 97% before rounding and the max win.
       provisional: true,
+      rtpPage: true,   // rtp-<id>.html: how the RTP is calculated (assets/js/rtp-page.js)
       rtp: 97,
       minBet: 0.1,
       maxWin: 10000,
@@ -249,7 +253,7 @@ window.BRAINER = {
       src: location.pathname.includes('/Website/') ? '../Game%20%234%20-%20Charge/index.html' : 'charge/index.html',
       tagline: 'Charge your Brainer to level it up and raise the multiplier. Overcharge its battery and it dozes off.',
       about: [
-        'A single-player instant game played in steps, in the style of Chicken Road. The Brainer starts every round at Level 1 on a charging pad beside its charging pillar, on a hilltop over the valley. Each charge either levels it up and raises the multiplier, or overcharges it.',
+        'A single-player instant game played in steps. The Brainer starts every round at Level 1 on a charging pad beside its charging pillar, on a hilltop over the valley. Each charge either levels it up and raises the multiplier, or overcharges it.',
         'Cash out after any charge to lock in the multiplier. The pillar charges a battery that floats over the Brainer’s head: if a charge overloads, the battery overfills and pops, the Brainer gets dizzy and dozes off, and the bet is lost.',
         'Every safe charge changes the Brainer. Its eleven looks are spread over the charges a round can reach, from the baby to the master in graduation cap and cape on the last one, and each charge in between snaps on a random piece of gear: power bands, gloves, headphones, energy wings and more. The Brainer is live 3D and never stands still while it waits for the next charge.'
       ],
@@ -261,6 +265,7 @@ window.BRAINER = {
       // Mirrors cfg and LEVELS in Game #4 - Charge/game.js: Plane Crash's ladder (25 charges hide 1, 3, 5 or 10 overloads,
       // multiplier = RTP ÷ chance of surviving, rounded down to the cent), with a charge for each step.
       provisional: true,
+      rtpPage: true,   // rtp-<id>.html: how the RTP is calculated (assets/js/rtp-page.js)
       rtp: 97,
       minBet: 0.1,
       maxWin: 10000,
@@ -272,8 +277,8 @@ window.BRAINER = {
         { name: 'Hardcore', bombs: 10, steps: 15, reach: 14, first: 1.61, top: 3170697.2 }
       ],
       specs: [
-        ['Type', 'Instant, single player, Chicken Road style'],
-        ['RTP', 'Up to 97%'],
+        ['Type', 'Instant, single player, one roll per charge'],
+        ['RTP', 'Up to 97%, the same at every cash-out point'],
         ['Difficulties', '1, 3, 5 or 10 overloads in 25 charges'],
         ['Charges per round', '24, 22, 20, up to 14'],
         ['Bet range', '$0.10 to $200'],

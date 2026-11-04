@@ -14,7 +14,7 @@ const cents = v => Math.round(v * 100) / 100;   // the balance stays in whole ce
 const SC = window.CHARGE_SCENE;   // assets/scene.js: where the station's parts and each Brainer sprite sit in the 1920 × 1080 renders
 
 /* ---------- config & math ---------- */
-// Chicken Road's ladder, as Plane Crash plays it, with a CHARGE for each step (Tornike, 2026-10-26): 25 charges hide 1, 3,
+// Plane Crash's ladder, with a CHARGE for each step (Tornike, 2026-10-26): 25 charges hide 1, 3,
 // 5 or 10 overloads and each charge uses up one more, so the chance of surviving n charges is C(25-n, b) / C(25, b). After
 // n safe charges the multiplier is the RTP divided by that chance, rounded down to the cent, so cashing out after any
 // charge returns up to the RTP: less where a payout rounds down to the cent, or where the $10,000 max win ends a long or

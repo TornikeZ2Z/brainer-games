@@ -39,6 +39,7 @@ function odds(g) {
           <thead><tr><th>Difficulty</th><th>${w.bombsIn}</th><th>${w.Paths}</th><th>${w.first}</th><th>Top multiplier</th></tr></thead>
           <tbody>${g.levels.map(l => `<tr><td>${esc(l.name)}</td><td class="num">${l.bombs}</td><td class="num">${pathsOf(l)}</td><td class="num">${fx(l.first)}</td><td class="num">${fx(topOf(g, l))}</td></tr>`).join('')}</tbody>
         </table></div>
+        ${g.rtpPage ? `<p><a href="rtp-${g.id}.html">How the RTP is calculated, with the odds of every ${w.step}</a></p>` : ''}
       </section>`;
   if (!g.chests) return '';
   const safe = 1 - g.bomb / 100, plain = 100 - g.chests.reduce((a, c) => a + c.chance, 0);
@@ -85,6 +86,7 @@ main.innerHTML = `<div class="wrap">
       <h3>Specs</h3>
       <dl>${specs}</dl>
       <p class="fine">Why &ldquo;up to&rdquo;: ${lower(g)}. The same for every player.</p>
+      ${g.rtpPage ? `<a class="btn btn-sun" href="rtp-${g.id}.html">How the RTP is calculated</a>` : ''}
       ${g.provisional ? '<p class="fine">Provisional until the game is certified.</p>' : ''}
       ${assets ? `<div style="display:grid;gap:8px">${assets}</div>` : ''}
       <a class="btn btn-red" href="contact.html">Request a demo</a>

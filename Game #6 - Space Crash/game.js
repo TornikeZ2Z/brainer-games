@@ -13,7 +13,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 
 /* ---------- config & math ---------- */
-// Chicken Road's ladder, one to one: 25 tiles hide 1, 3, 5 or 10 bombs and each step uncovers one more tile, so the
+// The ladder: 25 tiles hide 1, 3, 5 or 10 bombs and each step uncovers one more tile, so the
 // chance of surviving n steps is C(25-n, b) / C(25, b). After n safe paths the multiplier is the RTP divided by that
 // chance, rounded down to the cent, so a jump at any step returns up to the RTP: less where a payout rounds down to the
 // cent, or where the $10,000 max win ends a long or high-bet flight early. A step is one yes or no, whichever path is picked.
@@ -70,7 +70,7 @@ const enc = new TextEncoder();
 const hex = b => Array.from(new Uint8Array(b), x => x.toString(16).padStart(2, '0')).join('');
 const randHex = n => hex(crypto.getRandomValues(new Uint8Array(n)));
 const sha256 = async s => hex(await crypto.subtle.digest('SHA-256', enc.encode(s)));
-// Every row is one yes or no, as in Chicken Road and Charge (Tornike, 2026-10-30): HMAC-SHA256(server seed, "client
+// Every row is one yes or no, as in Charge (Tornike, 2026-10-30): HMAC-SHA256(server seed, "client
 // seed:nonce:row"), read as a fraction, is a no at or above that row's survival chance. It's fixed before the player
 // picks and no drone can change it: the drone picked only shows the answer.
 async function drawSteps(seed, client, nonce, d) {

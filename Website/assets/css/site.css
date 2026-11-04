@@ -537,3 +537,8 @@ td.num{font-family:var(--mono)}
 .legal ul{margin:10px 0 0;padding-left:20px;display:grid;gap:6px}
 .legal code{font-family:var(--mono);font-size:13px;padding:1px 6px;border-radius:6px;background:var(--tint-2);color:var(--ink)}
 .legal a{color:var(--main)}
+
+/* RTP pages (rtp-<id>.html): a formula block, plain bullet points (.points is the lobby's), a ladder table inside its details */
+.formula{margin:0;padding:14px 18px;border-radius:var(--r);background:var(--tint);color:var(--ink);font-family:var(--mono);font-size:clamp(13px,.95vw,15.5px);line-height:1.9;overflow-x:auto}
+.rtp-points{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--ink-2);max-width:72ch}
+.rules details > .tbl{margin:0 18px 16px}
