@@ -95,7 +95,7 @@ function stepPage(k) {
     <section id="measured"><h2>Measured with the game’s own roll</h2>
       <p>Each cell is ${F.rounds.toLocaleString('en-US')} simulated rounds at a $1 bet, using the same roll as the game (checked identical to its code). The exact value from the formulas is in brackets.</p>
       ${table(['Difficulty', `Cash out after 1 ${k.step}`, 'After 3', 'After 5'], L.map(({ l, f }) => [esc(l.name), ...f.measured.map(m => `${pct(m.rtp)} (${pct(m.exact)})`)]))}
-      <p>Every measured value is within ${within(measured)} of the exact one. The gaps are widest on Hardcore, where wins are rarer and larger.</p>
+      <p>Every measured value is within ${within(measured)} of the exact one. The margin of error is widest on Hardcore, where wins are rarer and larger.</p>
     </section>
     <section id="check"><h2>How to check a round</h2>
       <ol class="list">
@@ -136,7 +136,7 @@ function crashPage() {
     <section id="measured"><h2>Measured with the game’s own roll</h2>
       <p>${F.rounds.toLocaleString('en-US')} simulated rounds with the same roll as the game (checked identical to its code), each read at four auto cash-out points:</p>
       ${table(['Cash out at', 'Chance (exact)', 'Rounds that got there', 'Return (exact ' + pct(g.rtp / 100) + ')'], F.measured.map(m => [fx(m.at), chance(m.chance), chance(m.hit), pct(m.rtp)]))}
-      <p>Every measured return is within ${within(F.measured)} of the exact one; the gap grows with the multiplier, as wins get rarer and larger.</p>
+      <p>Every measured return is within ${within(F.measured)} of the exact one; the margin of error grows with the multiplier, as wins get rarer and larger.</p>
     </section>
     <section id="check"><h2>How to check a round</h2>
       <ol class="list">

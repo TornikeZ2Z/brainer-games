@@ -156,7 +156,7 @@ window.BRAINER = {
         'At each step choose one of five paths. The step’s result is fixed before you pick, so no path is better than another, and the bombs on the others are only for show. The ladder shows what a safe path pays.',
         'Jump with the parachute whenever you like to cash out at the current multiplier. A bomb on your path ends the flight.'
       ],
-      // Mirrors cfg and LEVELS in Game #1 - Plane Crash/game.js (a 25-tile ladder: 25 tiles hide 1, 3, 5 or 10 bombs,
+      // Mirrors cfg and LEVELS in Game #1 - Plane Crash/game.js (the ladder: 25 tiles hide 1, 3, 5 or 10 bombs,
       // multiplier = RTP ÷ chance of surviving, rounded down to the cent); final once the game is certified. `top` is the
       // ladder's last step; the site shows what a flight can pay, the max win at the minimum bet when that is lower. A
       // Hardcore flight through path 14 has reached the max win even at $0.10, so path 15 is never offered: `reach` paths.
