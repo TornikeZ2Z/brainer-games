@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Integration guide · Brainer</title>
+<meta name="description" content="How Brainer games will integrate with aggregators: what works today, the planned game server and wallet calls, and the steps from agreement to go-live.">
+<!-- link preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brainer">
+<meta property="og:title" content="Integration guide · Brainer">
+<meta property="og:description" content="How Brainer games will integrate with aggregators: what works today, the planned game server and wallet calls, and the steps from agreement to go-live.">
+<meta property="og:url" content="https://brainer.games/integration.html">
+<meta property="og:image" content="https://brainer.games/assets/share/brainer-games.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brainer: instant games for casinos, with the Brainer in Plane Crash and Space Crash">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link preview -->
+<meta name="theme-color" content="#532aff">
+<link rel="icon" href="assets/brainer/logo/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/brainer/logo/favicon.png" sizes="any">
+<link rel="preload" href="assets/fonts/firago/FiraGO-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+<script>try{var t=localStorage.getItem('brainer.theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body data-page="operators">
+<header id="site-header"></header>
+
+<main>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="operators.html">For operators</a><span aria-hidden="true">/</span><span aria-current="page">Integration guide</span></nav>
+    <div class="page-head">
+      <span class="sticker">Integration guide</span>
+      <h1>How integration with aggregators will work</h1>
+      <p class="lead">This guide describes how integration will work once our game server is built and the games are certified, and what works today. Full API docs come with the first certified release.</p>
+    </div>
+
+    <div class="detail" style="margin-top:0">
+      <div class="prose">
+        <section id="today"><h2>What works today</h2>
+          <ul class="ticks">
+            <li><div><b>A page per game, in an iframe</b><span>Each game is an HTML5 page at its own address, such as brainer.games/space-crash/, and runs in an iframe in phone and desktop browsers. English only, with play money in US dollars.</span></div></li>
+            <li><div><b>Signals to the page around it</b><span>On brainer.games the game tells the page around it when it is ready to show, and when the player goes full screen with the game&rsquo;s own button, so the page can hide its own bars. In a frame on another domain the page gets neither message, and the game plays its own intro.</span></div></li>
+            <li><div><b>Provably fair maths, published</b><span>One HMAC-SHA256 roll per step, or per round in Fly High, with a client seed the player can set and a fairness check in every game. RTP up to 97%, bets from $0.10 to $200 and a $10,000 max win. <a href="fairness.html">How the check works</a></span></div></li>
+            <li class="todo"><div><b>No game server or wallet yet</b><span>In the demos the game in your browser plays the server&rsquo;s part, and nothing connects to a wallet.</span></div></li>
+          </ul>
+        </section>
+
+        <section id="round"><span class="eyebrow">Planned</span><h2>How a real-money round will run</h2>
+          <p>A Brainer game server will hold the seeds and make every roll. The game in the player&rsquo;s browser will only show the results.</p>
+          <ol class="list">
+            <li><b>Launch.</b> Your platform opens the game by URL with a session token, the game id, the currency, the language, real or demo mode, and an exit URL back to your lobby.</li>
+            <li><b>Bet.</b> When the player starts a round, the game server debits the bet through your wallet API.</li>
+            <li><b>Play.</b> The game server makes each roll from its seeds and the player&rsquo;s client seed, and the game shows the result.</li>
+            <li><b>Cash out.</b> When the player cashes out, the game server credits the win through your wallet API.</li>
+            <li><b>Safe retries.</b> Every call carries its own transaction id, so a retry never debits or credits twice, and a call that fails is rolled back.</li>
+          </ol>
+        </section>
+
+        <section id="settings"><span class="eyebrow">Planned</span><h2>Settings and tools</h2>
+          <ul class="ticks">
+            <li class="todo"><div><b>Limits per casino and currency</b><span>Bet limits and the max win, set per operator and currency.</span></div></li>
+            <li class="todo"><div><b>Round history</b><span>Every round with its seeds, for your support team and for disputes.</span></div></li>
+            <li class="todo"><div><b>Responsible gaming hooks</b><span>The games will take your platform&rsquo;s reality checks, limits and other player protection.</span></div></li>
+            <li class="todo"><div><b>Signals to your page</b><span>The ready and full-screen messages for a lobby on your own domain.</span></div></li>
+            <li class="todo"><div><b>Free rounds and promos</b><span>Later, with the <a href="operators.html#promos">promo tools on our roadmap</a>.</span></div></li>
+          </ul>
+        </section>
+
+        <section id="steps"><h2>From agreement to go-live</h2>
+          <ol class="list">
+            <li><b>Agreement</b> with the aggregator.</li>
+            <li><b>Certification and licence.</b> A test lab certifies the games, and we get the licence each market requires. Neither has started yet.</li>
+            <li><b>Staging.</b> We integrate on the aggregator&rsquo;s staging environment, through their API.</li>
+            <li><b>QA.</b> Both teams test the integration.</li>
+            <li><b>Go-live</b>, market by market.</li>
+          </ol>
+        </section>
+
+        <section id="games"><h2>The games</h2>
+          <div class="tbl"><table>
+            <thead><tr><th>Game</th><th>Address</th><th>Maths</th></tr></thead>
+            <tbody>
+              <tr><td><a href="game-space-crash.html">Space Crash</a></td><td>/space-crash/</td><td><a href="rtp-space-crash.html">RTP</a></td></tr>
+              <tr><td><a href="game-multi-charge.html">Multi Charge</a></td><td>/multi-charge/</td><td><a href="rtp-multi-charge.html">RTP</a></td></tr>
+              <tr><td><a href="game-plane-crash.html">Plane Crash</a></td><td>/plane-crash/</td><td><a href="rtp-plane-crash.html">RTP</a></td></tr>
+              <tr><td><a href="game-fly-high.html">Fly High</a></td><td>/fly-high/</td><td><a href="rtp-fly-high.html">RTP</a></td></tr>
+              <tr><td><a href="game-charge.html">Charge</a></td><td>/charge/</td><td><a href="rtp-charge.html">RTP</a></td></tr>
+            </tbody>
+          </table></div>
+        </section>
+      </div>
+
+      <aside class="facts" aria-label="Where integration stands">
+        <h3>Where it stands</h3>
+        <dl>
+          <dt>Game client</dt><dd>HTML5 in an iframe, today</dd>
+          <dt>Devices</dt><dd>Phone and desktop</dd>
+          <dt>Game server</dt><dd>Planned</dd>
+          <dt>Wallet</dt><dd>Planned, through your aggregator&rsquo;s API</dd>
+          <dt>Direct API</dt><dd>Planned</dd>
+          <dt>RTP</dt><dd>Up to 97%</dd>
+          <dt>Bets / max win</dt><dd>$0.10 to $200 / $10,000</dd>
+          <dt>Currency</dt><dd>Per market (USD in the demo)</dd>
+          <dt>Languages</dt><dd>English</dd>
+          <dt>Certification</dt><dd>Not yet tested by a lab</dd>
+          <dt>Licence</dt><dd>Not licensed yet</dd>
+        </dl>
+        <p class="fine">Full API docs come with the first certified release.</p>
+        <a class="btn btn-red" href="contact.html">Request a demo</a>
+      </aside>
+    </div>
+  </div>
+
+  <section class="section" aria-labelledby="ctaTitle">
+    <div class="wrap">
+      <div class="cta-panel">
+        <div><h2 id="ctaTitle">Planning an integration?</h2><p>Tell us about your platform and markets, and we will walk your team through it.</p></div>
+        <a class="btn btn-lg" href="contact.html">Talk to us</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

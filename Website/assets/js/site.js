@@ -175,6 +175,8 @@ const NAV = [
   { key: 'fair', href: 'fairness.html', label: 'Fairness' },
   { key: 'contact', href: 'contact.html', label: 'Contact' }
 ];
+// The footer's Studio column adds the pages the header leaves out.
+const STUDIO = [...NAV.slice(0, 2), { key: 'integration', href: 'integration.html', label: 'Integration guide' }, ...NAV.slice(2)];
 const cur = key => (key === page ? ' aria-current="page"' : '');
 // The logo is the Brainer's visor, version B (assets/brainer/logo/visor.svg, Tornike's pick, 2026-10-27): the robot's own
 // screen, 80 by 44, in screen blue inside a white rim, with the line and the rim one weight. It is drawn inline so the
@@ -202,7 +204,7 @@ if (footer) {
   footer.innerHTML = `<div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">${logo()}<p>Instant games for casinos and their players. Every round provably fair.</p></div>
-      <div class="foot-col"><h4>Studio</h4><ul>${NAV.map(n => `<li><a href="${n.href}">${n.label}</a></li>`).join('')}</ul></div>
+      <div class="foot-col"><h4>Studio</h4><ul>${STUDIO.map(n => `<li><a href="${n.href}">${n.label}</a></li>`).join('')}</ul></div>
       <div class="foot-col"><h4>Legal</h4><ul><li><a href="responsible-gaming.html"${cur('rg')}>Responsible gaming</a></li><li><a href="terms.html"${cur('terms')}>Terms</a></li><li><a href="privacy.html"${cur('privacy')}>Privacy</a></li></ul></div>
     </div>
     <div class="foot-rg"><span class="age-badge">${SITE.minAge}+</span><p><b>For adults only.</b> Our games are for players aged ${SITE.minAge} and over, in markets where online gambling is legal. Gambling can be addictive; play responsibly.</p></div>
