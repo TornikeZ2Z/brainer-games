@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#5BA8E0" />
+<title>Cliffhanger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#4F9BD9; --sky-mid:#8FCBEF; --sky-low:#FFE6B0;
+    --rock:#D2A878; --rock-hi:#E6C79B; --rock-sh:#A87F50; --ink:#5E4427;
+    --jacket:#FF5E4D; --jacket-sh:#D8412F; --helmet:#FFC23C; --skin:#F3C9A0; --cheek:#FF9E86;
+    --rope:#E8B96A; --rope-dk:#C98F3E; --metal:#AEB6BE; --metal-sh:#7F8990;
+    --grass:#6FB861; --text:#4A2F17; --paper:#FFF7E9;
+    --amber:#E8843E; --danger:#E0392B; --good:#3FB36B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+    background:#1b2530; color:var(--text);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden; user-select:none; -webkit-user-select:none;
+  }
+  /* phone frame on large screens, fullscreen on phones */
+  #app{
+    position:relative; width:100%; max-width:460px; height:100dvh; max-height:980px;
+    overflow:hidden; background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 46%,#BFE3B6 88%,#A9D69E 100%);
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+  @supports not (height:100dvh){ #app{height:100vh} }
+
+  /* ---------- backdrop ---------- */
+  .sun{position:absolute;top:6%;right:14%;width:64px;height:64px;border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,#FFF6C8,#FFD95B);box-shadow:0 0 40px 10px rgba(255,221,91,.55);}
+  .peaks{position:absolute;top:0;left:0;width:100%;height:30%;}
+  .cloud{position:absolute;background:#fff;border-radius:50px;opacity:.92;
+    filter:drop-shadow(0 6px 0 rgba(180,210,235,.5));animation:drift linear infinite;}
+  .cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%;}
+  .c1{width:90px;height:26px;top:16%;left:-30%;animation-duration:42s}
+  .c1::before{width:40px;height:40px;top:-18px;left:14px}
+  .c1::after{width:30px;height:30px;top:-12px;left:48px}
+  .c2{width:70px;height:22px;top:33%;left:-40%;animation-duration:58s;animation-delay:-20s;opacity:.8}
+  .c2::before{width:32px;height:32px;top:-15px;left:10px}
+  .c2::after{width:24px;height:24px;top:-9px;left:38px}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(560px)}}
+
+  /* ground / valley revealed near bottom */
+  .valley{position:absolute;bottom:0;left:0;width:100%;height:14%;
+    background:linear-gradient(180deg,#A9D69E,#86C47B);border-top:4px solid #5d9a52;
+    transform:translateY(60%);transition:transform .8s cubic-bezier(.2,.8,.2,1);}
+  #app.landed .valley{transform:translateY(0)}
+
+  /* ---------- HUD ---------- */
+  #hud{position:absolute;top:0;left:0;width:100%;padding:14px 14px 0;display:flex;
+    align-items:flex-start;justify-content:space-between;z-index:30;pointer-events:none;}
+  .lvl{background:rgba(255,247,233,.92);border:3px solid var(--ink);border-radius:14px;
+    padding:6px 12px;font-family:'Lilita One',cursive;letter-spacing:.5px;color:var(--text);
+    box-shadow:0 4px 0 rgba(94,68,39,.35);font-size:15px;line-height:1;}
+  .lvl small{display:block;font-family:'Nunito';font-weight:800;font-size:9px;opacity:.6;letter-spacing:2px;margin-bottom:3px}
+  .hud-right{display:flex;align-items:center;gap:8px;pointer-events:auto}
+  #mute{width:38px;height:38px;border-radius:12px;border:3px solid var(--ink);background:rgba(255,247,233,.92);
+    font-size:16px;cursor:pointer;box-shadow:0 4px 0 rgba(94,68,39,.35);display:grid;place-items:center;color:var(--text)}
+  #mute:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(94,68,39,.35)}
+
+  .timer{position:relative;width:62px;height:62px}
+  .timer svg{transform:rotate(-90deg)}
+  .timer .num{position:absolute;inset:0;display:grid;place-items:center;
+    font-family:'Lilita One',cursive;font-size:22px;color:var(--text)}
+  .timer.lowtime .num{color:var(--danger)}
+
+  /* progress rail */
+  #rail{position:absolute;top:84px;right:14px;display:flex;flex-direction:column;gap:4px;z-index:25}
+  #rail .seg{width:8px;height:14px;border-radius:4px;background:rgba(255,255,255,.5);border:1.5px solid rgba(94,68,39,.35)}
+  #rail .seg.done{background:var(--good)}
+  #rail .seg.current{background:var(--helmet);box-shadow:0 0 0 2px rgba(255,194,60,.5)}
+
+  /* ---------- stage ---------- */
+  #stage{position:absolute;inset:0;z-index:10}
+
+  /* main fraying rope above climber */
+  #mainrope{position:absolute;top:0;left:50%;transform:translateX(-50%);width:60px;height:30%;z-index:11}
+  #mainrope.snapped{opacity:0;transition:opacity .15s}
+  .snapEnd{position:absolute;left:50%;top:26%;width:46px;height:60px;transform:translateX(-50%);
+    opacity:0;pointer-events:none;z-index:12}
+  #app.snap .snapEnd.top{animation:flingUp .9s ease-out forwards}
+  #app.snap .snapEnd.bot{animation:flingDown 1.1s ease-in forwards}
+  @keyframes flingUp{0%{opacity:1;transform:translate(-50%,0) rotate(0)}100%{opacity:0;transform:translate(-50%,-120px) rotate(40deg)}}
+  @keyframes flingDown{0%{opacity:1;transform:translate(-50%,0) rotate(0)}100%{opacity:0;transform:translate(-50%,160px) rotate(-60deg)}}
+
+  /* climber */
+  #climberWrap{position:absolute;top:24%;left:50%;width:120px;height:150px;margin-left:-60px;z-index:14;
+    transition:top .55s cubic-bezier(.34,1.3,.5,1),left .45s ease,transform .45s ease;}
+  #climberSway{width:100%;height:100%;transform-origin:50% 0%;animation:sway 3.4s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+  #app.lowtime #climberSway{animation-duration:.5s}
+  #app.falling #climberWrap{animation:tumble 1.25s cubic-bezier(.5,0,.9,.4) forwards;z-index:40}
+  @keyframes tumble{0%{transform:translateY(0) rotate(0)}15%{transform:translateY(10px) rotate(-12deg)}
+    100%{transform:translateY(118dvh) rotate(560deg)}}
+  #app.cheer #climberSway{animation:cheer .6s ease-in-out infinite}
+  @keyframes cheer{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+  .hop{animation:hopDown .6s cubic-bezier(.34,1.4,.5,1)}
+  @keyframes hopDown{0%{transform:translateY(0)}40%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+
+  /* choices */
+  #choices{position:absolute;left:0;bottom:0;width:100%;height:50%;display:flex;gap:10px;
+    padding:0 12px 16px;z-index:20;transition:opacity .25s}
+  #choices.hidden{opacity:0;pointer-events:none}
+  .choice{flex:1;position:relative;border:none;background:transparent;cursor:pointer;padding:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;outline:none}
+  .choice .card{position:relative;width:100%;flex:1;border-radius:20px 20px 18px 18px;overflow:hidden;
+    background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.05));
+    border:3px solid rgba(94,68,39,.5);box-shadow:0 8px 0 rgba(94,68,39,.2);transition:transform .12s}
+  .choice svg{width:100%;height:100%;display:block}
+  .choice .tag{margin-top:8px;font-family:'Lilita One',cursive;font-size:18px;letter-spacing:1px;
+    color:var(--paper);text-shadow:0 2px 0 rgba(94,68,39,.6);display:flex;align-items:center;gap:6px}
+  .choice:active .card,.choice:focus-visible .card{transform:translateY(3px)}
+  .choice:focus-visible{filter:drop-shadow(0 0 0 3px #fff)}
+  .choice:focus-visible .card{box-shadow:0 0 0 4px #fff,0 8px 0 rgba(94,68,39,.2)}
+  .choice .grab{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .15s;
+    font-family:'Lilita One';color:#fff;font-size:20px;text-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none}
+  .choice.picked .grab{opacity:1}
+  .pebble{animation:pebbleFall 1.6s ease-in infinite}
+  @keyframes pebbleFall{0%{transform:translateY(0);opacity:1}70%{opacity:1}100%{transform:translateY(60px);opacity:0}}
+
+  /* ---------- overlays ---------- */
+  .overlay{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;padding:28px;
+    background:rgba(20,30,40,.34);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .3s}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .panel{position:relative;background:var(--paper);border:4px solid var(--ink);border-radius:26px;padding:26px 22px 24px;
+    width:100%;max-width:340px;box-shadow:0 14px 0 rgba(94,68,39,.3);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes pop{0%{transform:scale(.8) translateY(10px);opacity:0}100%{transform:scale(1);opacity:1}}
+  .title{font-family:'Lilita One',cursive;font-size:46px;line-height:.92;color:var(--text);
+    text-shadow:0 4px 0 rgba(94,68,39,.18);margin-bottom:4px}
+  .title .b{color:var(--jacket)}
+  .subtitle{font-weight:800;font-size:15px;color:#7a5a3a;margin-bottom:18px}
+  .rules{list-style:none;text-align:left;margin:0 auto 20px;max-width:280px;display:flex;flex-direction:column;gap:10px}
+  .rules li{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:13.5px;color:#5b4026;line-height:1.3}
+  .rules .ic{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:13px;color:#fff}
+  .btn{font-family:'Lilita One',cursive;font-size:24px;letter-spacing:1px;color:#fff;border:3px solid var(--ink);
+    border-radius:18px;padding:14px 20px;width:100%;cursor:pointer;
+    background:linear-gradient(180deg,#FF7A45,#FF5E4D);box-shadow:0 6px 0 var(--jacket-sh);transition:transform .1s,box-shadow .1s}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--jacket-sh)}
+  .btn.green{background:linear-gradient(180deg,#5BD08A,#3FB36B);box-shadow:0 6px 0 #2c8a50}
+  .hint{margin-top:12px;font-weight:800;font-size:11.5px;color:#9a7a55;letter-spacing:.5px}
+  .endline{font-family:'Lilita One';font-size:30px;color:var(--text);margin-bottom:6px;line-height:1}
+  .endsub{font-weight:800;font-size:14px;color:#7a5a3a;margin-bottom:8px}
+  .best{font-weight:900;font-size:13px;color:#b07d3a;margin-bottom:18px}
+
+  /* confetti */
+  #confetti{position:absolute;inset:0;z-index:55;pointer-events:none;overflow:hidden}
+  .conf{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:confFall linear forwards}
+  @keyframes confFall{to{transform:translateY(110dvh) rotate(720deg)}}
+
+  @media (prefers-reduced-motion: reduce){
+    .cloud,#climberSway{animation:none !important}
+    .conf{display:none}
+  }
+  @media (max-height:680px){
+    .title{font-size:38px}.rules li{font-size:12.5px}#climberWrap{top:20%}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- backdrop -->
+  <div class="sun"></div>
+  <svg class="peaks" viewBox="0 0 460 140" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,140 L60,60 L100,95 L160,30 L210,90 L270,45 L330,100 L390,55 L460,110 L460,140Z" fill="#B9CBE0" opacity=".85"/>
+    <path d="M150,42 L160,30 L172,46 Z M260,57 L270,45 L282,60 Z M380,67 L390,55 L402,70 Z" fill="#fff"/>
+  </svg>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="valley"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="lvl"><small>HEIGHT</small><span id="lvlText">— / 10</span></div>
+    <div class="hud-right">
+      <div class="timer" id="timer">
+        <svg width="62" height="62" viewBox="0 0 62 62">
+          <circle cx="31" cy="31" r="24" fill="rgba(255,247,233,.92)" stroke="rgba(94,68,39,.25)" stroke-width="6"/>
+          <circle id="ring" cx="31" cy="31" r="24" fill="none" stroke="#3FB36B" stroke-width="6"
+                  stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="0"/>
+        </svg>
+        <div class="num" id="timeNum">5</div>
+      </div>
+      <button id="mute" aria-label="Toggle sound">🔊</button>
+    </div>
+  </div>
+  <div id="rail" aria-hidden="true"></div>
+
+  <!-- stage -->
+  <div id="stage">
+    <svg id="mainrope" viewBox="0 0 60 200" preserveAspectRatio="none" aria-hidden="true">
+      <path id="ropeStrandL" d="M30,0 C24,40 24,80 30,120 C36,150 36,170 30,196" fill="none" stroke="var(--rope-dk)" stroke-width="5" stroke-linecap="round"/>
+      <path id="ropeStrandR" d="M30,0 C36,40 36,80 30,120 C24,150 24,170 30,196" fill="none" stroke="var(--rope)" stroke-width="6" stroke-linecap="round"/>
+      <path id="ropeStrandC" d="M30,0 L30,196" fill="none" stroke="var(--rope-dk)" stroke-width="3" stroke-dasharray="3 6" stroke-linecap="round"/>
+    </svg>
+    <svg class="snapEnd top" viewBox="0 0 46 60" aria-hidden="true"><path d="M23,60 C18,40 28,30 20,10 C16,2 30,0 26,12 C22,30 30,42 27,60Z" fill="var(--rope)" stroke="var(--rope-dk)" stroke-width="2"/></svg>
+    <svg class="snapEnd bot" viewBox="0 0 46 60" aria-hidden="true"><path d="M23,0 C28,20 18,30 26,50 C30,58 16,60 20,48 C24,30 16,18 19,0Z" fill="var(--rope)" stroke="var(--rope-dk)" stroke-width="2"/></svg>
+
+    <!-- climber -->
+    <div id="climberWrap">
+      <div id="climberSway">
+        <svg viewBox="0 0 120 150" aria-hidden="true">
+          <!-- harness rope stub to hands -->
+          <line x1="60" y1="2" x2="60" y2="34" stroke="var(--rope-dk)" stroke-width="6" stroke-linecap="round"/>
+          <!-- backpack -->
+          <rect x="40" y="62" width="40" height="44" rx="15" fill="#9C6B3F" stroke="var(--ink)" stroke-width="4"/>
+          <rect x="50" y="70" width="20" height="18" rx="6" fill="#7E5530" stroke="var(--ink)" stroke-width="3"/>
+          <!-- legs (under) -->
+          <path d="M50,104 q-4,20 -2,34" fill="none" stroke="var(--ink)" stroke-width="15" stroke-linecap="round"/>
+          <path d="M70,104 q4,20 2,34" fill="none" stroke="var(--ink)" stroke-width="15" stroke-linecap="round"/>
+          <path d="M50,104 q-4,20 -2,32" fill="none" stroke="#7A4F2A" stroke-width="10" stroke-linecap="round"/>
+          <path d="M70,104 q4,20 2,32" fill="none" stroke="#7A4F2A" stroke-width="10" stroke-linecap="round"/>
+          <!-- boots -->
+          <ellipse cx="46" cy="140" rx="10" ry="7" fill="#3c2a18" stroke="var(--ink)" stroke-width="3"/>
+          <ellipse cx="74" cy="140" rx="10" ry="7" fill="#3c2a18" stroke="var(--ink)" stroke-width="3"/>
+          <!-- body / jacket -->
+          <rect x="40" y="66" width="40" height="46" rx="17" fill="var(--jacket)" stroke="var(--ink)" stroke-width="4"/>
+          <line x1="60" y1="72" x2="60" y2="106" stroke="var(--jacket-sh)" stroke-width="3" stroke-linecap="round"/>
+          <!-- left arm down -->
+          <path d="M44,76 q-14,8 -12,28" fill="none" stroke="var(--ink)" stroke-width="14" stroke-linecap="round"/>
+          <path d="M44,76 q-14,8 -12,28" fill="none" stroke="var(--jacket)" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="31" cy="103" r="6" fill="var(--skin)" stroke="var(--ink)" stroke-width="3"/>
+          <!-- right arm raised to rope -->
+          <path d="M76,74 q10,-18 -16,-40" fill="none" stroke="var(--ink)" stroke-width="14" stroke-linecap="round"/>
+          <path d="M76,74 q10,-18 -16,-40" fill="none" stroke="var(--jacket)" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="60" cy="32" r="6.5" fill="var(--skin)" stroke="var(--ink)" stroke-width="3"/>
+          <!-- head -->
+          <circle cx="60" cy="50" r="20" fill="var(--skin)" stroke="var(--ink)" stroke-width="4"/>
+          <circle cx="52" cy="54" r="3.4" fill="var(--cheek)"/><circle cx="68" cy="54" r="3.4" fill="var(--cheek)"/>
+          <circle cx="54" cy="48" r="2.6" fill="#3a2a1c"/><circle cx="66" cy="48" r="2.6" fill="#3a2a1c"/>
+          <path d="M55,57 q5,5 10,0" fill="none" stroke="#3a2a1c" stroke-width="2.6" stroke-linecap="round"/>
+          <!-- helmet -->
+          <path d="M39,49 a21,21 0 0 1 42,0 Z" fill="var(--helmet)" stroke="var(--ink)" stroke-width="4"/>
+          <rect x="37" y="46" width="46" height="7" rx="3.5" fill="#E8A91E" stroke="var(--ink)" stroke-width="3"/>
+          <circle cx="60" cy="34" r="5" fill="#FFF3C4" stroke="var(--ink)" stroke-width="3"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- choices -->
+    <div id="choices" class="hidden">
+      <button class="choice" id="choiceL" aria-label="Grab the left rope">
+        <div class="card" id="cardL"></div>
+        <div class="grab">GRAB!</div>
+        <div class="tag">◀ LEFT</div>
+      </button>
+      <button class="choice" id="choiceR" aria-label="Grab the right rope">
+        <div class="card" id="cardR"></div>
+        <div class="grab">GRAB!</div>
+        <div class="tag">RIGHT ▶</div>
+      </button>
+    </div>
+  </div>
+
+  <div id="confetti"></div>
+
+  <!-- START -->
+  <div class="overlay show" id="startScreen">
+    <div class="panel">
+      <a href="index.html" style="position:absolute;top:12px;left:12px;font-family:'Nunito';font-weight:900;font-size:11px;color:#9a7a55;text-decoration:none;background:#efe1c4;border:2px solid var(--ink);border-radius:9px;padding:4px 8px">← Arcade</a>
+      <div class="title">CLIFF<span class="b">HANGER</span></div>
+      <div class="subtitle">Ten ropes between you and the valley floor.</div>
+      <ul class="rules">
+        <li><span class="ic" style="background:var(--danger)">⏱</span><span>Your rope snaps in 5 seconds — grab a new one before it does, or you fall.</span></li>
+        <li><span class="ic" style="background:var(--good)">✓</span><span>Thick, solid ropes are far safer. Thin, frayed ropes are a gamble.</span></li>
+        <li><span class="ic" style="background:var(--amber)">▼</span><span>The lower you climb, the worse the odds. Reach the bottom to win.</span></li>
+      </ul>
+      <button class="btn" id="startBtn">ENTER</button>
+      <div class="hint">Tap a rope · or use ← →</div>
+    </div>
+  </div>
+
+  <!-- DEAD -->
+  <div class="overlay" id="deadScreen">
+    <div class="panel">
+      <div class="endline" id="deadTitle">You fell!</div>
+      <div class="endsub" id="deadMsg"></div>
+      <div class="best" id="deadBest"></div>
+      <button class="btn" id="retryBtn">TRY AGAIN</button>
+      <div class="hint">Press Enter to retry</div>
+    </div>
+  </div>
+
+  <!-- WIN -->
+  <div class="overlay" id="winScreen">
+    <div class="panel">
+      <div class="title" style="font-size:38px">YOU<br><span class="b">MADE IT!</span></div>
+      <div class="endsub">Ten ropes, zero falls. Nerves of steel.</div>
+      <button class="btn green" id="playAgainBtn">PLAY AGAIN</button>
+      <div class="hint">Press Enter to play again</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var TOTAL_LEVELS = 10, ROUND_TIME = 5.0, RING_C = 150.8;
+  var app = document.getElementById('app');
+  var els = {
+    lvlText: document.getElementById('lvlText'),
+    ring: document.getElementById('ring'),
+    timeNum: document.getElementById('timeNum'),
+    timer: document.getElementById('timer'),
+    rail: document.getElementById('rail'),
+    choices: document.getElementById('choices'),
+    choiceL: document.getElementById('choiceL'), choiceR: document.getElementById('choiceR'),
+    cardL: document.getElementById('cardL'), cardR: document.getElementById('cardR'),
+    climberWrap: document.getElementById('climberWrap'), sway: document.getElementById('climberSway'),
+    mainrope: document.getElementById('mainrope'),
+    strandL: document.getElementById('ropeStrandL'), strandR: document.getElementById('ropeStrandR'), strandC: document.getElementById('ropeStrandC'),
+    start: document.getElementById('startScreen'), dead: document.getElementById('deadScreen'), win: document.getElementById('winScreen'),
+    deadTitle: document.getElementById('deadTitle'), deadMsg: document.getElementById('deadMsg'), deadBest: document.getElementById('deadBest'),
+    confetti: document.getElementById('confetti'), mute: document.getElementById('mute')
+  };
+
+  var state = { phase:'start', level:1, safeSide:'left', timeLeft:ROUND_TIME, raf:0, lastT:0, locked:false, best:0, muted:false };
+
+  // build progress rail
+  for (var i=0;i<TOTAL_LEVELS;i++){ var s=document.createElement('div'); s.className='seg'; els.rail.appendChild(s); }
+  function paintRail(){
+    var segs = els.rail.children;
+    for (var i=0;i<segs.length;i++){
+      segs[i].className = 'seg' + (i < state.level-1 ? ' done' : (i === state.level-1 ? ' current' : ''));
+    }
+  }
+
+  // survival odds — clue tilts hard, luck still bites, odds fall each level
+  function safeProb(L){ return Math.max(0.55, 0.96 - (L-1)*0.045); }
+  function dangerProb(L){ return Math.max(0.20, 0.62 - (L-1)*0.045); }
+
+  /* ---------- rope-card art ---------- */
+  function ropeCardSVG(solid){
+    if (solid){
+      return '<svg viewBox="0 0 120 200" preserveAspectRatio="xMidYMax meet">'+
+        '<path d="M0,0 H120 V34 Q90,46 60,40 Q30,34 0,42 Z" fill="var(--rock)" stroke="var(--ink)" stroke-width="3"/>'+
+        '<path d="M0,0 H120 V20 Q60,30 0,22 Z" fill="var(--rock-hi)" opacity=".5"/>'+
+        // grass tuft
+        '<path d="M88,38 q-2,-12 2,-16 M92,39 q1,-13 5,-15 M96,40 q4,-10 9,-12" stroke="var(--grass)" stroke-width="2.6" fill="none" stroke-linecap="round"/>'+
+        // sturdy anchor
+        '<rect x="52" y="30" width="16" height="10" rx="2" fill="var(--metal)" stroke="var(--ink)" stroke-width="3"/>'+
+        '<circle cx="60" cy="44" r="7" fill="none" stroke="var(--metal-sh)" stroke-width="4"/>'+
+        // thick braided rope
+        '<path d="M60,50 C50,80 50,110 60,140 C70,162 70,182 60,200" fill="none" stroke="var(--ink)" stroke-width="13" stroke-linecap="round"/>'+
+        '<path d="M60,50 C50,80 50,110 60,140 C70,162 70,182 60,200" fill="none" stroke="var(--rope)" stroke-width="10" stroke-linecap="round"/>'+
+        '<path d="M60,50 C50,80 50,110 60,140 C70,162 70,182 60,200" fill="none" stroke="var(--rope-dk)" stroke-width="4" stroke-dasharray="4 8" stroke-linecap="round"/>'+
+        // handhold loop
+        '<ellipse cx="60" cy="150" rx="15" ry="11" fill="none" stroke="var(--rope-dk)" stroke-width="7"/>'+
+        '<ellipse cx="60" cy="150" rx="15" ry="11" fill="none" stroke="var(--rope)" stroke-width="4"/>'+
+      '</svg>';
+    }
+    return '<svg viewBox="0 0 120 200" preserveAspectRatio="xMidYMax meet">'+
+      '<path d="M0,0 H120 V34 Q90,46 60,40 Q30,34 0,42 Z" fill="var(--rock)" stroke="var(--ink)" stroke-width="3"/>'+
+      '<path d="M0,0 H120 V20 Q60,30 0,22 Z" fill="var(--rock-hi)" opacity=".5"/>'+
+      // crack near anchor
+      '<polyline points="50,40 56,26 52,18 60,8" fill="none" stroke="#4A3318" stroke-width="2.6" stroke-linejoin="round"/>'+
+      '<polyline points="68,38 64,30 70,22" fill="none" stroke="#4A3318" stroke-width="2.2"/>'+
+      // loosened anchor (tilted)
+      '<g transform="rotate(-14 60 38)"><rect x="52" y="30" width="16" height="10" rx="2" fill="var(--metal-sh)" stroke="var(--ink)" stroke-width="3"/>'+
+      '<circle cx="60" cy="44" r="7" fill="none" stroke="var(--metal-sh)" stroke-width="4"/></g>'+
+      // falling pebble
+      '<circle class="pebble" cx="40" cy="46" r="4" fill="var(--rock-sh)" stroke="var(--ink)" stroke-width="2"/>'+
+      // thin frayed rope
+      '<path d="M60,50 C66,82 54,112 62,142 C68,164 56,182 60,200" fill="none" stroke="var(--ink)" stroke-width="8" stroke-linecap="round"/>'+
+      '<path d="M60,50 C66,82 54,112 62,142 C68,164 56,182 60,200" fill="none" stroke="#D9B98C" stroke-width="5" stroke-linecap="round"/>'+
+      // frizz / broken strands
+      '<path d="M60,60 q-10,4 -16,-2 M61,72 q11,3 16,-4 M59,86 q-12,2 -17,-5 M62,100 q12,1 17,-6" stroke="var(--rope-dk)" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M55,132 l-9,-3 M66,150 l9,2 M57,168 l-10,3" stroke="var(--rope-dk)" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+      // weak handhold
+      '<ellipse cx="60" cy="150" rx="13" ry="9" fill="none" stroke="#C9A26B" stroke-width="4" stroke-dasharray="6 4"/>'+
+    '</svg>';
+  }
+
+  /* ---------- audio (lazy, optional) ---------- */
+  var actx=null;
+  function audio(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return actx; }
+  function beep(freq,dur,type,vol,when){
+    if(state.muted) return; var ac=audio(); if(!ac) return;
+    try{
+      var t=ac.currentTime+(when||0);
+      var o=ac.createOscillator(), g=ac.createGain();
+      o.type=type||'sine'; o.frequency.value=freq;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol||0.12,t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+dur+0.02);
+    }catch(e){}
+  }
+  function sfx(name){
+    switch(name){
+      case 'tick': beep(880,0.06,'square',0.05); break;
+      case 'pick': beep(330,0.06,'triangle',0.10); break;
+      case 'survive': beep(523,0.10,'sine',0.12,0); beep(784,0.14,'sine',0.12,0.09); break;
+      case 'die': beep(200,0.18,'sawtooth',0.14,0); beep(120,0.30,'sawtooth',0.12,0.12); break;
+      case 'win': [523,659,784,1046].forEach(function(f,i){ beep(f,0.16,'sine',0.13,i*0.12); }); break;
+    }
+  }
+
+  /* ---------- flow ---------- */
+  function show(el){ el.classList.add('show'); }
+  function hide(el){ el.classList.remove('show'); }
+
+  function startGame(){
+    audio();
+    state.level=1; state.phase='playing';
+    hide(els.start); hide(els.dead); hide(els.win);
+    app.classList.remove('landed','falling','cheer','snap');
+    els.climberWrap.style.transition='none';
+    els.climberWrap.style.top='24%'; els.climberWrap.style.left='50%'; els.climberWrap.style.marginLeft='-60px';
+    void els.climberWrap.offsetWidth;
+    els.climberWrap.style.transition='';
+    paintRail();
+    beginRound();
+  }
+
+  function beginRound(){
+    state.phase='playing'; state.locked=false;
+    state.safeSide = Math.random()<0.5 ? 'left':'right';
+    state.timeLeft = ROUND_TIME;
+    els.lvlText.textContent = state.level + ' / ' + TOTAL_LEVELS;
+    paintRail();
+    // place clue
+    var leftSolid = state.safeSide==='left';
+    els.cardL.innerHTML = ropeCardSVG(leftSolid);
+    els.cardR.innerHTML = ropeCardSVG(!leftSolid);
+    els.choiceL.classList.remove('picked'); els.choiceR.classList.remove('picked');
+    // reset rope visuals
+    app.classList.remove('lowtime','snap','falling');
+    els.mainrope.classList.remove('snapped');
+    setRopeFray(0);
+    els.ring.setAttribute('stroke','#3FB36B');
+    els.timer.classList.remove('lowtime');
+    // show
+    els.choices.classList.remove('hidden');
+    state.lastT = performance.now();
+    lastWholeSec = Math.ceil(ROUND_TIME);
+    cancelAnimationFrame(state.raf);
+    state.raf = requestAnimationFrame(loop);
+  }
+
+  var lastWholeSec = 5;
+  function loop(now){
+    var dt = (now - state.lastT)/1000; state.lastT = now;
+    state.timeLeft -= dt;
+    if (state.timeLeft < 0) state.timeLeft = 0;
+    var ratio = state.timeLeft/ROUND_TIME;            // 1 -> 0
+    var fray = 1 - ratio;
+
+    els.ring.setAttribute('stroke-dashoffset', (RING_C*(1-ratio)).toFixed(1));
+    var shown = Math.ceil(state.timeLeft);
+    els.timeNum.textContent = shown;
+
+    if (ratio<=0.5 && ratio>0.25){ els.ring.setAttribute('stroke','#E8843E'); }
+    else if (ratio<=0.25){ els.ring.setAttribute('stroke','#E0392B'); els.timer.classList.add('lowtime'); app.classList.add('lowtime'); }
+    setRopeFray(fray);
+
+    if (shown<lastWholeSec && shown<=3 && shown>0){ sfx('tick'); }
+    lastWholeSec = shown;
+
+    if (state.timeLeft<=0){ cancelAnimationFrame(state.raf); ropeSnap(); return; }
+    state.raf = requestAnimationFrame(loop);
+  }
+
+  // fray 0..1 : shift colour toward red + spread strands + wobble
+  function setRopeFray(f){
+    var col = f<0.5 ? 'var(--rope-dk)' : (f<0.78 ? '#E8843E' : '#E0392B');
+    els.strandL.setAttribute('stroke', col);
+    els.strandR.setAttribute('stroke', f<0.5 ? 'var(--rope)' : (f<0.78 ? '#F0A05A':'#F26B5E'));
+    var spread = (1 + f*0.9);
+    els.strandL.style.transform = 'translateX('+(-f*4)+'px) scaleX('+spread+')';
+    els.strandR.style.transform = 'translateX('+(f*4)+'px) scaleX('+spread+')';
+    els.strandL.style.transformOrigin='30px 0'; els.strandR.style.transformOrigin='30px 0';
+    els.strandC.setAttribute('stroke-width', Math.max(1, 3 - f*2));
+  }
+
+  function chooseSide(side){
+    if (state.phase!=='playing' || state.locked) return;
+    state.locked = true;
+    cancelAnimationFrame(state.raf);
+    sfx('pick');
+    (side==='left'?els.choiceL:els.choiceR).classList.add('picked');
+    els.choices.classList.add('hidden');
+    app.classList.remove('lowtime');
+
+    // slide climber toward chosen rope
+    els.climberWrap.style.left = side==='left' ? '32%' : '68%';
+
+    var safe = (side===state.safeSide);
+    var p = safe ? safeProb(state.level) : dangerProb(state.level);
+    var survived = Math.random() < p;
+
+    setTimeout(function(){
+      if (survived) onSurvive(); else onFall('rope');
+    }, 360);
+  }
+
+  function onSurvive(){
+    if (state.level >= TOTAL_LEVELS){ onWin(); return; }
+    state.level++;
+    sfx('survive');
+    // recentre + hop down to next ledge
+    els.climberWrap.style.left='50%';
+    els.sway.classList.remove('hop'); void els.sway.offsetWidth; els.sway.classList.add('hop');
+    paintRail();
+    setTimeout(beginRound, 620);
+  }
+
+  function ropeSnap(){
+    if (state.phase!=='playing') return;
+    app.classList.add('snap');
+    els.mainrope.classList.add('snapped');
+    onFall('timeout');
+  }
+
+  function onFall(cause){
+    state.phase='dead';
+    els.choices.classList.add('hidden');
+    els.mainrope.classList.add('snapped');
+    app.classList.add('falling');
+    sfx('die');
+    if (state.level > state.best) state.best = state.level;
+    var msg = cause==='timeout'
+      ? 'You froze — the rope gave way before you grabbed the next one.'
+      : 'That rope looked dodgy. It was. It didn\u2019t hold.';
+    els.deadTitle.textContent = cause==='timeout' ? 'Too slow!' : 'It snapped!';
+    els.deadMsg.textContent = msg + ' You reached height ' + state.level + ' of ' + TOTAL_LEVELS + '.';
+    els.deadBest.textContent = 'Best this session: ' + state.best + ' / ' + TOTAL_LEVELS;
+    setTimeout(function(){ show(els.dead); }, 1150);
+  }
+
+  function onWin(){
+    state.phase='won';
+    sfx('win');
+    els.choices.classList.add('hidden');
+    // drop climber onto the valley
+    app.classList.add('landed');
+    els.climberWrap.style.transition='top 1s cubic-bezier(.2,.85,.25,1),left .4s ease';
+    els.climberWrap.style.top='78%'; els.climberWrap.style.left='50%';
+    els.mainrope.classList.add('snapped');
+    if (TOTAL_LEVELS > state.best) state.best = TOTAL_LEVELS;
+    setTimeout(function(){ app.classList.add('cheer'); burstConfetti(); show(els.win); }, 1050);
+  }
+
+  function burstConfetti(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var colors=['#FF5E4D','#FFC23C','#3FB36B','#4F9BD9','#FF9E86','#fff'];
+    els.confetti.innerHTML='';
+    for (var i=0;i<44;i++){
+      var c=document.createElement('div'); c.className='conf';
+      c.style.left=(Math.random()*100)+'%';
+      c.style.background=colors[i%colors.length];
+      c.style.animationDuration=(1.8+Math.random()*1.6)+'s';
+      c.style.animationDelay=(Math.random()*0.5)+'s';
+      c.style.transform='rotate('+(Math.random()*360)+'deg)';
+      els.confetti.appendChild(c);
+    }
+    setTimeout(function(){ els.confetti.innerHTML=''; }, 3600);
+  }
+
+  /* ---------- inputs ---------- */
+  els.choiceL.addEventListener('click', function(){ chooseSide('left'); });
+  els.choiceR.addEventListener('click', function(){ chooseSide('right'); });
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('retryBtn').addEventListener('click', startGame);
+  document.getElementById('playAgainBtn').addEventListener('click', startGame);
+
+  els.mute.addEventListener('click', function(){
+    state.muted=!state.muted; els.mute.textContent = state.muted ? '🔇' : '🔊';
+    if(!state.muted){ audio(); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key==='ArrowLeft'){ e.preventDefault(); chooseSide('left'); }
+    else if (e.key==='ArrowRight'){ e.preventDefault(); chooseSide('right'); }
+    else if (e.key==='Enter'){
+      if (state.phase==='start' || state.phase==='dead' || state.phase==='won'){ e.preventDefault(); startGame(); }
+    }
+  });
+
+  // prevent double-tap zoom on the playfield
+  app.addEventListener('touchstart', function(e){ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
+})();
+</script>
+</body>
+</html>
